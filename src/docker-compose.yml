@@ -1,0 +1,34 @@
+version: '3.8'
+
+networks:
+  dev:
+    driver: bridge
+
+services:
+  author_db:
+    image: mcr.microsoft.com/mssql/server
+    container_name: author_db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Admin123$
+    ports:
+      - "1433:1433"
+    volumes:
+      - dbdata:/var/opt/mssql
+    networks:
+      - dev
+
+  messagebroker:
+    image: rabbitmq:management
+    container_name: messagebroker
+    hostname: library-mq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+volumes:
+  dbdata:
